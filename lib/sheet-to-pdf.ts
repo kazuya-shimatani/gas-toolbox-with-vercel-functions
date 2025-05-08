@@ -1,3 +1,4 @@
+// NOTE: This file assumes node-fetch v2 is installed for CommonJS compatibility.
 const nodeFetch = require('node-fetch');
 
 /**
