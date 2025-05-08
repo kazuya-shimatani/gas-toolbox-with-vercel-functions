@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { initializeMcpApiHandler } from "../lib/mcp-api-handler";
-import { sheetRangeToPdfBuffer } from "../lib/sheet-to-pdf";
+import { fetchPdfFromGas } from "../lib/sheet-to-pdf";
 
 const handler = initializeMcpApiHandler(
   (server) => {
@@ -9,28 +9,20 @@ const handler = initializeMcpApiHandler(
       content: [{ type: "text", text: `Tool echo: ${message}` }],
     }));
     server.tool(
-      "downloadSheetPdf",
+      "createSheetPdf",
       {
+        baseUrl: z.string(), // GASのWeb Apps URL
         spreadsheetId: z.string(),
         sheetName: z.string(),
-        range: z.string(),
-        accessToken: z.string(),
+        downloadFileName: z.string(),
       },
-      async ({ spreadsheetId, sheetName, range, accessToken }) => {
+      async ({ baseUrl, spreadsheetId, sheetName, downloadFileName }) => {
         try {
-          const pdfBuffer = await sheetRangeToPdfBuffer({ spreadsheetId, sheetName, range, accessToken });
+          const createdPdfFileName =await fetchPdfFromGas({ baseUrl, spreadsheetId, sheetName, downloadFileName });
           return {
             content: [
-              {
-                type: "resource",
-                resource: {
-                  uri: "data:application/pdf;base64," + pdfBuffer.toString("base64"),
-                  blob: pdfBuffer.toString("base64"),
-                  mimeType: "application/pdf",
-                  text: "sheet.pdf"
-                }
-              }
-            ]
+              { type: "text", text: `${createdPdfFileName}を作成しました` },
+            ],
           };
         } catch (e: any) {
           return {
@@ -47,6 +39,9 @@ const handler = initializeMcpApiHandler(
       tools: {
         echo: {
           description: "Echo a message",
+        },
+        createSheetPdf: {
+          description: "Create a PDF from a Google Sheet",
         },
       },
     },

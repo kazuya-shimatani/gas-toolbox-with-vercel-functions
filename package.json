@@ -13,14 +13,13 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.10.2",
     "content-type": "^1.0.5",
-    "googleapis": "^133.0.0",
-    "pdfkit": "^0.13.0",
+    "node-fetch": "^3.3.2",
     "raw-body": "^3.0.0",
     "redis": "^4.7.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
-    "@types/pdfkit": "^0.13.9"
+    "@types/node-fetch": "^2.6.12"
   }
 }
