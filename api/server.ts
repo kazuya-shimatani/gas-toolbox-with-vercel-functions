@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { initializeMcpApiHandler } from "../lib/mcp-api-handler";
-import { fetchPdfFromGas } from "../lib/sheet-to-pdf";
+const { fetchPdfFromGas } = require("../lib/sheet-to-pdf");
 
 const handler = initializeMcpApiHandler(
   (server) => {
