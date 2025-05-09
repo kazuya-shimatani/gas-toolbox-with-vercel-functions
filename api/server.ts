@@ -69,12 +69,12 @@ const handler = initializeMcpApiHandler(
         body: z.string(),
         filename: z.string(),
         mimeType: z.string(),
-        filePath: z.string(),
+        fileUrl: z.string(),
         sendType: z.string(),
       },
-      async ({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, filePath, sendType }) => {
+      async ({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, fileUrl, sendType }) => {
         try {
-          const response = await gmailDraftOrSendFileViaGas({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, filePath, sendType });
+          const response = await gmailDraftOrSendFileViaGas({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, fileUrl, sendType });
           return {
             content: [
               { type: "text", text: `Gmail下書き保存または送信しました: ${subject}` },

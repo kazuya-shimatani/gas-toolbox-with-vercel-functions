@@ -4,22 +4,19 @@ interface GmailDraftOrSendFileParams {
   to: string;
   subject: string;
   body: string;
-  filePath: string;
+  fileUrl: string;
   filename: string;
   mimeType: string;
   sendType?: 'draft' | 'send';
 }
 
 /**
- * ローカルファイルをbase64エンコードしてGAS Web APIに送信
+ * fileUrlをGAS Web APIに送信
  */
-export async function gmailDraftOrSendFileViaGas({ gasGmailApiBaseUrl, to, subject, body, filePath, filename, mimeType, sendType = 'draft' }: GmailDraftOrSendFileParams): Promise<string> {
+export async function gmailDraftOrSendFileViaGas({ gasGmailApiBaseUrl, to, subject, body, fileUrl, filename, mimeType, sendType = 'draft' }: GmailDraftOrSendFileParams): Promise<string> {
   const nodeFetch = require('node-fetch');
-  // ファイルをbase64エンコード
-  const fileBuffer = fs.readFileSync(filePath);
-  const base64Data = fileBuffer.toString('base64');
   const headers = { 'Content-Type': 'application/json' };
-  const postBody = JSON.stringify({ to, subject, body, filename, mimeType, base64Data, sendType });
+  const postBody = JSON.stringify({ to, subject, body, filename, mimeType, fileUrl, sendType });
 
   const res = await nodeFetch(gasGmailApiBaseUrl, {
     method: 'POST',
