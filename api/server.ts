@@ -2,6 +2,7 @@ import { z } from "zod";
 import { initializeMcpApiHandler } from "../lib/mcp-api-handler";
 const { fetchPdfFromGas } = require("../lib/sheet-to-pdf");
 const { renameSheetViaGas } = require("../lib/rename-sheet");
+const { gmailDraftOrSendViaGas } = require("../lib/gmail-draft-or-send");
 
 const handler = initializeMcpApiHandler(
   (server) => {
@@ -59,6 +60,35 @@ const handler = initializeMcpApiHandler(
         }
       }
     );
+    server.tool(
+      "gmailDraftOrSend",
+      {
+        gasGmailApiBaseUrl: z.string(), // GASのWeb Apps URL
+        to: z.string(), 
+        subject: z.string(),
+        body: z.string(),
+        filename: z.string(),
+        mimeType: z.string(),
+        base64Data: z.string(),
+        sendType: z.string(),
+      },
+      async ({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, base64Data, sendType }) => {
+        try {
+          const response = await gmailDraftOrSendViaGas({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, base64Data, sendType });
+          return {
+            content: [
+              { type: "text", text: `Gmail下書き保存または送信しました: ${subject}` },
+            ],
+          };
+        } catch (e: any) {
+          return {
+            content: [
+              { type: "text", text: `Error: ${e.message}` },
+            ],
+          };
+        }
+      }
+    );
   },
   {
     capabilities: {
@@ -71,6 +101,9 @@ const handler = initializeMcpApiHandler(
         },
         renameSheet: {
           description: "Rename a Google Sheet",
+        },
+        gmailDraftOrSend: {
+          description: "Send or draft a Gmail message",
         },
       },
     },
