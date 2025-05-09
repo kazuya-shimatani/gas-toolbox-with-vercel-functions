@@ -2,7 +2,6 @@ import { z } from "zod";
 import { initializeMcpApiHandler } from "../lib/mcp-api-handler";
 const { fetchPdfFromGas } = require("../lib/sheet-to-pdf");
 const { renameSheetViaGas } = require("../lib/rename-sheet");
-const { downloadFile } = require("../lib/download-file");
 
 const handler = initializeMcpApiHandler(
   (server) => {
@@ -20,10 +19,10 @@ const handler = initializeMcpApiHandler(
       },
       async ({ createSheetPdfBaseUrl, spreadsheetId, sheetName, downloadFileName }) => {
         try {
-          const createdPdfFileName = await fetchPdfFromGas({ createSheetPdfBaseUrl, spreadsheetId, sheetName, downloadFileName });
+          const downloadUrl = await fetchPdfFromGas({ createSheetPdfBaseUrl, spreadsheetId, sheetName, downloadFileName });
           return {
             content: [
-              { type: "text", text: `${createdPdfFileName}を作成しました` },
+              { type: "text", text: `ダウンロードリンク: ${downloadUrl}` },
             ],
           };
         } catch (e: any) {
@@ -60,30 +59,6 @@ const handler = initializeMcpApiHandler(
         }
       }
     );
-    server.tool(
-      "downloadFile",
-      {
-        downloadPdfBaseUrl: z.string(), // GASのWeb Apps URL
-        fileId: z.string(), // ダウンロードするファイルのID
-        filePath: z.string(), // ダウンロードするファイルの保存先のパス
-      },
-      async ({ downloadPdfBaseUrl, fileId, filePath }) => {
-        try {
-          const response = await downloadFile({ downloadPdfBaseUrl, fileId, filePath });
-          return {
-            content: [
-              { type: "text", text: `ファイルをダウンロードしました: ${filePath}` },
-            ],
-          };
-        } catch (e: any) {
-          return {
-            content: [
-              { type: "text", text: `Error: ${e.message}` },
-            ],
-          };
-        }
-      }
-    );
   },
   {
     capabilities: {
@@ -96,9 +71,6 @@ const handler = initializeMcpApiHandler(
         },
         renameSheet: {
           description: "Rename a Google Sheet",
-        },
-        downloadFile: {
-          description: "Download a file from Google Drive",
         },
       },
     },
