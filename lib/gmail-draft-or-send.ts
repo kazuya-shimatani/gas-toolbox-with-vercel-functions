@@ -1,20 +1,23 @@
-interface GmailDraftOrSendParams {
-  gasGmailApiBaseUrl: string; // GAS Web APIのURL
+import * as fs from 'fs';
+interface GmailDraftOrSendFileParams {
+  gasGmailApiBaseUrl: string;
   to: string;
   subject: string;
   body: string;
+  filePath: string;
   filename: string;
   mimeType: string;
-  base64Data: string;
-  sendType?: 'draft' | 'send'; // 省略時は'draft'
+  sendType?: 'draft' | 'send';
 }
 
 /**
- * GAS Web APIのdoPostでGmail下書き保存または送信
- * @returns GASのレスポンス(JSON文字列)
+ * ローカルファイルをbase64エンコードしてGAS Web APIに送信
  */
-async function gmailDraftOrSendViaGas({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, base64Data, sendType = 'draft' }: GmailDraftOrSendParams): Promise<string> {
+export async function gmailDraftOrSendFileViaGas({ gasGmailApiBaseUrl, to, subject, body, filePath, filename, mimeType, sendType = 'draft' }: GmailDraftOrSendFileParams): Promise<string> {
   const nodeFetch = require('node-fetch');
+  // ファイルをbase64エンコード
+  const fileBuffer = fs.readFileSync(filePath);
+  const base64Data = fileBuffer.toString('base64');
   const headers = { 'Content-Type': 'application/json' };
   const postBody = JSON.stringify({ to, subject, body, filename, mimeType, base64Data, sendType });
 
@@ -23,8 +26,8 @@ async function gmailDraftOrSendViaGas({ gasGmailApiBaseUrl, to, subject, body, f
     headers,
     body: postBody,
   });
-  if (!res.ok) throw new Error(`GAS API error: ${res.statusText}`);
-  return res.text();
+  if (!res.ok) throw new Error(`GAS API error: ${res.status} ${res.statusText}`);
+  return await res.text();
 }
 
-module.exports = { gmailDraftOrSendViaGas }; 
+module.exports = { gmailDraftOrSendFileViaGas }; 

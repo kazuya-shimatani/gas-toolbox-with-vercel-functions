@@ -2,7 +2,7 @@ import { z } from "zod";
 import { initializeMcpApiHandler } from "../lib/mcp-api-handler";
 const { fetchPdfFromGas } = require("../lib/sheet-to-pdf");
 const { renameSheetViaGas } = require("../lib/rename-sheet");
-const { gmailDraftOrSendViaGas } = require("../lib/gmail-draft-or-send");
+const { gmailDraftOrSendFileViaGas } = require("../lib/gmail-draft-or-send");
 
 const handler = initializeMcpApiHandler(
   (server) => {
@@ -69,12 +69,12 @@ const handler = initializeMcpApiHandler(
         body: z.string(),
         filename: z.string(),
         mimeType: z.string(),
-        base64Data: z.string(),
+        filePath: z.string(),
         sendType: z.string(),
       },
-      async ({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, base64Data, sendType }) => {
+      async ({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, filePath, sendType }) => {
         try {
-          const response = await gmailDraftOrSendViaGas({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, base64Data, sendType });
+          const response = await gmailDraftOrSendFileViaGas({ gasGmailApiBaseUrl, to, subject, body, filename, mimeType, filePath, sendType });
           return {
             content: [
               { type: "text", text: `Gmail下書き保存または送信しました: ${subject}` },
