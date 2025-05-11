@@ -2,7 +2,7 @@
 const nodeFetch = require('node-fetch');
 
 /**
- * GAS Web APIを呼び出してPDFバッファを取得
+ * GAS Web APIのdoGetでPDFを生成およびダウンロードリンクを取得
  */
 async function fetchPdfFromGas({ createSheetPdfBaseUrl, spreadsheetId, sheetName, downloadFileName }) {
   const url = `${createSheetPdfBaseUrl}?spreadsheetId=${encodeURIComponent(spreadsheetId)}&sheetName=${encodeURIComponent(sheetName)}&downloadFileName=${encodeURIComponent(downloadFileName)}`;

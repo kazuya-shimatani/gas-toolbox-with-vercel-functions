@@ -2,21 +2,46 @@
 
 ## Usage
 
-Update `api/server.ts` with your tools, prompts, and resources following the [MCP TypeScript SDK documentation](https://github.com/modelcontextprotocol/typescript-sdk/tree/main?tab=readme-ov-file#server).
+### Tool: createSheetPdf
 
-[There is also a Next.js version of this template](https://vercel.com/templates/next.js/model-context-protocol-mcp-with-next-js)
+**Parameters:**
+- `createSheetPdfBaseUrl` (string, required): GASのWeb Apps URL
+- `spreadsheetId` (string, required): スプレッドシートID
+- `sheetName` (string, required): PDF出力対象のシート名
+- `downloadFileName` (string, required): PDFファイル名
 
-## Notes for running on Vercel
-
-- Requires a Redis attached to the project under `process.env.REDIS_URL`
-- Make sure you have [Fluid compute](https://vercel.com/docs/functions/fluid-compute) enabled for efficient execution
-- After enabling Fluid compute, open `vercel.json` and adjust max duration to 800 if you using a Vercel Pro or Enterprise account
-- [Deploy the MCP template](https://vercel.com/templates/other/model-context-protocol-mcp-with-vercel-functions)
-
-## Sample Client
-
-`script/test-client.mjs` contains a sample client to try invocations.
-
-```sh
-node scripts/test-client.mjs https://mcp-on-vercel.vercel.app
+**Example request:**
+```json
+{
+  "method": "createSheetPdf",
+  "params": {
+    "createSheetPdfBaseUrl": "https://xxxxxxxxxxxx",
+    "spreadsheetId": "1234567890abcdefg",
+    "sheetName": "サンプル",
+    "downloadFileName": "サンプルPDF"
+  }
+}
 ```
+
+### Tool: renameSheet
+
+**Parameters:**
+- `renameSheetBaseUrl` (string, required): GASのWeb Apps URL
+- `spreadsheetId` (string, required): スプレッドシートID
+- `oldSheetName` (string, required): 変更対象のシート名
+- `newSheetName` (string, required): 変更後のシート名
+
+**Example request:**
+```json
+{
+  "method": "renameSheet",
+  "params": {
+    "renameSheetBaseUrl": "https://xxxxxxxxxxxx",
+    "spreadsheetId": "1234567890abcdefg",
+    "oldSheetName": "サンプル",
+    "newSheetName": "サンプル修正後"
+  }
+}
+```
+
+
